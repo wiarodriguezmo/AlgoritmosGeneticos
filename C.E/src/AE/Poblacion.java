@@ -30,23 +30,53 @@ public class Poblacion {
             case "torneo": 
                 return torneo(tamano);
             case "ranking":
-                System.out.println("Ranking");
-                return null;
+                return ranking(tamano);
             case "elitista":
                 return elitista(tamano);
+            case "ss":
+                return steadyState(tamano);
             case "ruleta":
                 return ruleta(tamano);
-            case "id":
-                System.out.println("ID (implementando)");
-                return null;
             default: System.out.println("Error...");
                 return null;
         }
-                
-        // El objetoi Población que se devuelve debe ser completo, contener todos los parámetros de la población trabajada.
+    }
+    
+    
+    // Ordena los elementos y luego selecciona uno aleatorio, si pasa X~N(0,1) < C.X^(-r), 
+    // que es lo mismo que Math.random()< 1.0 / Math.pow(2, sel)  | siendo C=1, X=2 y r=sel. (sel es el ranking).
+    private Poblacion ranking(int tamano){ // http://www.opttek.com/documentation/engine/WebHelp/SimulationOptimization_Ranking_and_selection_algorithm.htm
+        ArrayList<Individuo> seleccionados1 = individuos;
+        
+        Collections.sort(seleccionados1, new Comparator() {
+                @Override
+                public int compare(Object o1, Object o2) {
+                    Individuo i1 = (Individuo) o1;
+                    Individuo i2 = (Individuo) o2;
+                    return new Integer(i2.fitness).compareTo(new Integer(i1.fitness));
+                }
+            });
+        
+        ArrayList<Individuo> seleccionados = new ArrayList<Individuo>();
+        while(tamano>0) {  //según n (tamaño) padres a seleccionar de la población se hace n lanzamientos de la ruleta.
+            int sel = (int) (Math.random()*individuos.size());
+            Individuo individuo = individuos.get(sel);
+            if(Math.random()< 1.0 / (double)(double)Math.pow(2, sel)){
+                seleccionados.add(individuo);
+                tamano--;
+            }
+        }
+        return new Poblacion(seleccionados, cruce);
     }
     
     private Poblacion elitista(int tamano){
+        ArrayList<Individuo> seleccionados1 = steadyState((int)(tamano/3.0)).individuos;
+        ArrayList<Individuo> seleccionados = ruleta(tamano-(int)(tamano/3.0)).individuos;
+        seleccionados.addAll(seleccionados1);
+        return new Poblacion(seleccionados, cruce);
+    }
+    
+    private Poblacion steadyState(int tamano){
         ArrayList<Individuo> seleccionados1 = individuos;
         
         Collections.sort(seleccionados1, new Comparator() {
@@ -58,7 +88,7 @@ public class Poblacion {
                 }
             });
         ArrayList<Individuo> seleccionados = new ArrayList<Individuo>();
-        for (Iterator<Individuo> it = individuos.iterator(); it.hasNext() && tamano>0; tamano--) {
+        for (Iterator<Individuo> it = seleccionados1.iterator(); it.hasNext() && tamano>0; tamano--) {
             Individuo next = it.next();
             seleccionados.add(next);
         }
