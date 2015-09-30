@@ -33,8 +33,7 @@ public class Poblacion {
                 System.out.println("Elitista");
                 return null;
             case "ruleta":
-                System.out.println("Ruleta");
-                return null;
+                return ruleta(tamano);
             case "id":
                 System.out.println("ID (implementando)");
                 return null;
@@ -45,15 +44,25 @@ public class Poblacion {
         // El objetoi Población que se devuelve debe ser completo, contener todos los parámetros de la población trabajada.
     }
     
-
-    public void ruleta(){
+    // este método emplea el algoritmo O(1) de estocástica aceptancia [1]
+    // [1] https://en.wikipedia.org/wiki/Fitness_proportionate_selection#Java_-_stochastic_acceptance_O.281.29_version & http://arxiv.org/abs/1109.3627
+    public Poblacion ruleta(int tamano){
+        ArrayList<Individuo> seleccionados = new ArrayList<>();
+        while(tamano>0) {  //según n (tamaño) padres a seleccionar de la población se hace n lanzamientos de la ruleta.
+            Individuo individuo = individuos.get((int) (Math.random()*individuos.size()));
+            if(Math.random()< ((double)individuo.fitness) / (double)individuo.mejorFitness()){
+                seleccionados.add(individuo);
+                tamano--;
+            }
+        }
+        return new Poblacion(seleccionados, cruce);
     }
     
     // Asume que la 
     private Poblacion torneo(int tamano){
         ArrayList<Individuo> seleccionados = new ArrayList<>();
         for (int i = 0; i < tamano; i++) {
-            //según n individuos de la población se hace n torneos para seleccionar n padres
+            //según n(tamaño) individuos de la población se hace n torneos para seleccionar n padres
             ArrayList<Individuo> muestreo = selAleatoria(16); // 16 es el número de muestreo para cada los n torneos, 16individuos participan cada torneo
             seleccionados.add(torneoRecursivo(muestreo.subList(0, muestreo.size())));
         }

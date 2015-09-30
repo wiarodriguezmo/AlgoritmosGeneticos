@@ -22,6 +22,11 @@ public class Individuo {
         return temp;
     }
     
+    // También a modificar según el caso
+    public double mejorFitness(){
+        return codigo.length;
+    }
+    
     public static boolean[] generarCodAleatorio(int tamano){
         boolean[] cod = new boolean[tamano];
         for (int i = 0; i < tamano; i++) {
