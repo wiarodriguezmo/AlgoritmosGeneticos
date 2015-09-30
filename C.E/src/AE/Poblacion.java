@@ -109,7 +109,6 @@ public class Poblacion {
         return new Poblacion(seleccionados, cruce);
     }
     
-    // Asume que la 
     private Poblacion torneo(int tamano){
         ArrayList<Individuo> seleccionados = new ArrayList<>();
         for (int i = 0; i < tamano; i++) {

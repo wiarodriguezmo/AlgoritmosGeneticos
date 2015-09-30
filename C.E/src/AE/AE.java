@@ -24,7 +24,7 @@ public class AE {
         boolean fin = false;
         while(!fin){
             Poblacion padres = poblacion.seleccion("ranking",poblacion.individuos.size()); // Existe también: Ranking, Ruleta, steadyState, Elitista y Torneo.
-            Poblacion hijos = padres.generarHijos("1punto"); // Para cruce existe: 1punto, 2puntos, uniforme. (Trabajando en "Cut and splice" y "Genes Dominantes"). 
+            Poblacion hijos = padres.generarHijos("2puntos"); // Para cruce existe: 1punto, 2puntos, uniforme. (Trabajando en "Cut and splice" y "Genes Dominantes"). 
             
             poblacion.individuos.addAll(hijos.individuos);
             poblacion = poblacion.seleccion("ranking",padres.individuos.size());
