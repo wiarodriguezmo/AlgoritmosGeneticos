@@ -1,7 +1,10 @@
 package AE;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Iterator;
 
 public class Poblacion {
     double cruce;
@@ -29,9 +32,8 @@ public class Poblacion {
             case "ranking":
                 System.out.println("Ranking");
                 return null;
-            case "elistista":
-                System.out.println("Elitista");
-                return null;
+            case "elitista":
+                return elitista(tamano);
             case "ruleta":
                 return ruleta(tamano);
             case "id":
@@ -44,9 +46,28 @@ public class Poblacion {
         // El objetoi Población que se devuelve debe ser completo, contener todos los parámetros de la población trabajada.
     }
     
+    private Poblacion elitista(int tamano){
+        ArrayList<Individuo> seleccionados1 = individuos;
+        
+        Collections.sort(seleccionados1, new Comparator() {
+                @Override
+                public int compare(Object o1, Object o2) {
+                    Individuo i1 = (Individuo) o1;
+                    Individuo i2 = (Individuo) o2;
+                    return new Integer(i2.fitness).compareTo(new Integer(i1.fitness));
+                }
+            });
+        ArrayList<Individuo> seleccionados = new ArrayList<Individuo>();
+        for (Iterator<Individuo> it = individuos.iterator(); it.hasNext() && tamano>0; tamano--) {
+            Individuo next = it.next();
+            seleccionados.add(next);
+        }
+        return new Poblacion(seleccionados, cruce);
+    }
+    
     // este método emplea el algoritmo O(1) de estocástica aceptancia [1]
     // [1] https://en.wikipedia.org/wiki/Fitness_proportionate_selection#Java_-_stochastic_acceptance_O.281.29_version & http://arxiv.org/abs/1109.3627
-    public Poblacion ruleta(int tamano){
+    private Poblacion ruleta(int tamano){
         ArrayList<Individuo> seleccionados = new ArrayList<>();
         while(tamano>0) {  //según n (tamaño) padres a seleccionar de la población se hace n lanzamientos de la ruleta.
             Individuo individuo = individuos.get((int) (Math.random()*individuos.size()));

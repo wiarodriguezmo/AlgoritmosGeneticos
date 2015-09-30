@@ -23,11 +23,11 @@ public class AE {
     public static Poblacion evolucionar(Poblacion poblacion, int generaciones){
         boolean fin = false;
         while(!fin){
-            Poblacion padres = poblacion.seleccion("ruleta",poblacion.individuos.size()); // Existe también: Ranking, Ruleta, Elitista y Elitista.
+            Poblacion padres = poblacion.seleccion("elitista",poblacion.individuos.size()); // Existe también: Ranking, Ruleta, Elitista y Elitista.
             Poblacion hijos = padres.generarHijos("1punto"); // Para cruce existe: 1punto, 2puntos, uniforme. (Trabajando en "Cut and splice" y "Genes Dominantes"). 
             
             poblacion.individuos.addAll(hijos.individuos);
-            poblacion = poblacion.seleccion("ruleta",padres.individuos.size());
+            poblacion = poblacion.seleccion("elitista",padres.individuos.size());
             
             //falta
             generaciones--;
