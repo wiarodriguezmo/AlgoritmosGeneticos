@@ -1,30 +1,27 @@
 package AE;
 
+import java.util.ArrayList;
+
 
 public class Individuo {
     int fitness;
     boolean[] codigo;
+    
+    int[][] transiciones = new int[10][3]; // AFD
     
     public Individuo(){
     }
     
     public Individuo(boolean[] codigo){
         this.codigo = codigo;
+        transiciones = configurarTransiciones();
         fitness = fitness();
     }
     
-    // Función a modificar
-    private int fitness(){
-        int temp=0;
-        for(int i=0;i<codigo.length;i++)
-            if(codigo[i])temp++;
-        
-        return temp;
-    }
     
     // También a modificar según el caso
-    public double mejorFitness(){
-        return codigo.length;
+    public double mejorFitness(){ //AFD
+        return 1000;
     }
     
     public static boolean[] generarCodAleatorio(int tamano){
@@ -35,7 +32,6 @@ public class Individuo {
         }
         return cod;
     }
-    
     
     public static Individuo[] cruzar(String tipoCruce, Individuo uno, Individuo dos){
         switch (tipoCruce) {
@@ -92,6 +88,35 @@ public class Individuo {
             }
         }
     }
+
+    private int[][]  configurarTransiciones(){ //AFD
+        int[][] transicion = new int[10][3];
+        for (int i = 0; i < 10; i++) { // Cada estado son 9bits, bit0=aceptación,bit1:5=estado al que pasa si recibe 0, bit5:9=estado al que pasa si recibe 1.
+                transicion[i][0] = codigo[i*9] ?1:0;
+                transicion[i][1] = ((codigo[i*9+1]?1:0)*8 + (codigo[i*9+2]?1:0)*4 + (codigo[i*9+3]?1:0)*2 + (codigo[i*9+4]?1:0)*1 + (int)(Math.random()*5))%10; // Conversión a entero
+                transicion[i][2] = ((codigo[i*9+5]?1:0)*8 + (codigo[i*9+6]?1:0)*4 + (codigo[i*9+7]?1:0)*2 + (codigo[i*9+8]?1:0)*1 + (int)(Math.random()*5))%10; // Conversión a entero
+        }
+        return transicion;
+    }
+    
+    // Función a modificar
+    private int fitness(){ // AFD
+        ArrayList<boolean[]> training = AE.training;
+        int fitness=0;
+        for (boolean[] training1 : training) {
+            int estado=0;
+            for (int i = 1; i < training1.length; i++) {
+                estado = sigEstado(estado,training1[i]);
+            }
+            fitness += transiciones[estado][0]==(training1[0]?1:0)?1:0; // Suma al fitness si el estado de aceptación del autómata coincide con el valor de la cadena probada.
+        }
+        return fitness;
+    }
+    
+    private int sigEstado(int estado, boolean training1) {
+        return transiciones[estado][training1?2:1];
+    }
+    
     
     
 }
