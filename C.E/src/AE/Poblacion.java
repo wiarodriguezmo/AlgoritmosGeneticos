@@ -53,7 +53,7 @@ public class Poblacion {
                 public int compare(Object o1, Object o2) {
                     Individuo i1 = (Individuo) o1;
                     Individuo i2 = (Individuo) o2;
-                    return new Integer(i2.fitness).compareTo(new Integer(i1.fitness));
+                    return new Double(i2.fitness).compareTo(new Double(i1.fitness));
                 }
             });
         
@@ -84,7 +84,7 @@ public class Poblacion {
                 public int compare(Object o1, Object o2) {
                     Individuo i1 = (Individuo) o1;
                     Individuo i2 = (Individuo) o2;
-                    return new Integer(i2.fitness).compareTo(new Integer(i1.fitness));
+                    return new Double(i2.fitness).compareTo(new Double(i1.fitness));
                 }
             });
         ArrayList<Individuo> seleccionados = new ArrayList<Individuo>();
@@ -101,7 +101,7 @@ public class Poblacion {
         ArrayList<Individuo> seleccionados = new ArrayList<>();
         while(tamano>0) {  //según n (tamaño) padres a seleccionar de la población se hace n lanzamientos de la ruleta.
             Individuo individuo = individuos.get((int) (Math.random()*individuos.size()));
-            if(Math.random()< ((double)individuo.fitness) / (double)individuo.mejorFitness()){
+            if(Math.random()< ((double)individuo.fitness) / mejorFitness()){
                 seleccionados.add(individuo);
                 tamano--;
             }
@@ -158,5 +158,14 @@ public class Poblacion {
         }
         return new Poblacion(hijos, cruce);
     }
-
+    
+    // Eavluar cual es el mejor fitness de acuerdo a la poblacion
+    public double mejorFitness(){
+        double mejorFit = -1;
+        for(Individuo each : individuos){
+            if(mejorFit < (double)each.fitness)
+                mejorFit = (double) each.fitness;
+        }
+        return mejorFit;
+    }
 }

@@ -1,8 +1,9 @@
 package AE;
 
+import Utilidades.Funciones;
 
 public class Individuo {
-    int fitness;
+    double fitness;
     boolean[] codigo;
     
     public Individuo(){
@@ -12,20 +13,20 @@ public class Individuo {
         this.codigo = codigo;
         fitness = fitness();
     }
-    
-    // Función a modificar
-    private int fitness(){
-        int temp=0;
-        for(int i=0;i<codigo.length;i++)
-            if(codigo[i])temp++;
-        
-        return temp;
+    public double[] booleanToInt(boolean[] codigo){
+        double[] codigoD = new double[codigo.length];
+        for(int i =0; i<codigo.length;i++)
+            if(codigo[i]==true) codigoD[i] = 1;
+            else codigoD[i] = 0;
+        return codigoD;
+    }
+    // Función a evaluar el fitness de acuerdo a la cadena del individuo
+    private double fitness(){
+        Funciones func = new Funciones();
+        return func.Schwefel(booleanToInt(codigo));
     }
     
-    // También a modificar según el caso
-    public double mejorFitness(){
-        return codigo.length;
-    }
+    
     
     public static boolean[] generarCodAleatorio(int tamano){
         boolean[] cod = new boolean[tamano];
