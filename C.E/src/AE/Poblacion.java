@@ -59,9 +59,9 @@ public class Poblacion {
         
         ArrayList<Individuo> seleccionados = new ArrayList<Individuo>();
         while(tamano>0) {  //según n (tamaño) padres a seleccionar de la población se hace n lanzamientos de la ruleta.
-            int sel = (int) (Math.random()*individuos.size());
-            Individuo individuo = individuos.get(sel);
-            if(Math.random()< 1.0 / (double)(double)Math.pow(2, sel)){
+            int sel = (int) (Math.random()*seleccionados1.size());
+            Individuo individuo = seleccionados1.get(sel);
+            if(Math.random()< 1.0 / (double)Math.pow(2, sel)){
                 seleccionados.add(individuo);
                 tamano--;
             }

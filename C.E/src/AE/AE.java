@@ -18,11 +18,14 @@ public class AE {
             comienzo +=  poblacion.individuos.get(i).fitness;
         }System.out.println(" Población inicial : " + comienzo/100);
         
-        Poblacion superPoblacion = evolucionar(poblacion,10000); // población y generaciones
-        
+        Poblacion superPoblacion = evolucionar(poblacion,600); // población y generaciones
+        Individuo mejor = new Individuo();
+        mejor.fitness = 0;
         for (int i = 0; i < 100; i++) {
+            if(mejor.fitness<superPoblacion.individuos.get(i).fitness)mejor=superPoblacion.individuos.get(i);
             finalizado+= superPoblacion.individuos.get(i).fitness;
         }System.out.println(" Población final : " + finalizado/100);
+        System.out.println("Mejor individuo: " + mejor.fitness);
     }
     
     // Este es el ciclo While. 
@@ -33,7 +36,7 @@ public class AE {
             Poblacion hijos = padres.generarHijos("1punto"); // Para cruce existe: 1punto, 2puntos, uniforme. (Trabajando en "Cut and splice" y "Genes Dominantes"). 
             
             poblacion.individuos.addAll(hijos.individuos);
-            poblacion = poblacion.seleccion("elitista",hijos.individuos.size());
+            poblacion = poblacion.seleccion("ranking",hijos.individuos.size());
             
             //falta
             generaciones--;
