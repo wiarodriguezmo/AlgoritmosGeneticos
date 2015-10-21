@@ -1,3 +1,5 @@
+package AE;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -67,16 +69,16 @@ public class Funciones {
     }
     public static void main(String args[]){
         Funciones func = new Funciones();
-        double[] values = new double[120];
         double f;
         double j=0;
         /*double f = func.Rosenbrock(values);*/
-        values[0] = 0;
-        for(int i=0; j<60; i++){
+        for(int i=0; j<20; i++){
             j=j+0.1;
-            values[0] = j; 
-            f = func.Griewangk(values);
-            System.out.println(j+",");
+            double[] val = new double[2];
+            val[0] = j;
+            val[1] = j+1;
+            f = func.Rosenbrock(val);
+            System.out.println(j+"," + f);
         }
     }
 }

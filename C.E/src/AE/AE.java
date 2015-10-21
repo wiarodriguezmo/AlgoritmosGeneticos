@@ -6,28 +6,27 @@ public class AE {
     
     public static void main(String[] args) throws IOException{
         int numIndividuos = 100;
-        
-        Poblacion poblacion = new Poblacion(numIndividuos,90,0.6); // #individuos, largoCromosoma, probCruce.
+        int D=2;
+        double frontera = 2.048;
+        double probMutacion = 0.2;
+        Poblacion poblacion = new Poblacion(numIndividuos,D,0.6,frontera,probMutacion); // #individuos, Dimensión, probCruce, frontera.
         
         //Probando
-            int comienzo = 0;
+            double comienzo = 0.0;
             for (int i = 0; i < numIndividuos; i++) {
                 comienzo +=  poblacion.individuos.get(i).fitness;
-            }System.out.println(" Población inicial : " + comienzo/numIndividuos);
-        //Probando
+            }System.out.println(" Población inicial : " + comienzo/(double)numIndividuos);
+        //Probando 
         
         Poblacion superPoblacion = evolucionar(poblacion,600); // población y generaciones
         
-        //Probando
-            int finalizado=0;
-            Individuo mejor = new Individuo();
-            mejor.fitness = 0;
+         //Probando
+            double finalizado=0;
             for (int i = 0; i < numIndividuos; i++) {
-                if(mejor.fitness<superPoblacion.individuos.get(i).fitness)mejor=superPoblacion.individuos.get(i);
                 finalizado+= superPoblacion.individuos.get(i).fitness;
-            }System.out.println(" Población final : " + finalizado/numIndividuos);
-            System.out.println("Mejor individuo: " + mejor.fitness);
-        //Probando
+            }System.out.println(" Población final : " + finalizado/(double)numIndividuos);
+            System.out.println("Mejor individuo: " + superPoblacion.mejor.fitness);
+        //Probando */
     }
     
     // Este es el ciclo While. 
@@ -35,7 +34,7 @@ public class AE {
         boolean fin = false;
         while(!fin){
             Poblacion padres = poblacion;//.seleccion("ss",poblacion.individuos.size()); // Existe también: Ranking, Ruleta, steadyState, Elitista y Torneo. (Trabajando en Stochastic universal sampling) 
-            Poblacion hijos = padres.generarHijos("1punto"); // Para cruce existe: 1punto, 2puntos, uniforme. (Trabajando en "Cut and splice" y "Genes Dominantes"). 
+            Poblacion hijos = padres.generarHijos("promedio"); // Para cruce existe: promedio, intercambio, suma/resta aleatoria de la mitad de la diferencia (suYre)
             
             poblacion.individuos.addAll(hijos.individuos);
             poblacion = poblacion.seleccion("ranking",hijos.individuos.size());
@@ -47,15 +46,12 @@ public class AE {
         return poblacion;
     }
     
-    /* Las siguientes funciones están próximas a ser cambiadas por lambda expresión de Java8 */
+    /* La siguiente función está próxima a ser cambiada por lambda expresión de Java8 */
     
     // Función a modificar
-    public static int fitness(){ 
-        return 0;
+    public static double fitness(double codigo[]){ 
+        Funciones func = new Funciones();
+        return -func.Rosenbrock(codigo);
     }   
-    
-    // También a modificar según el caso
-    public static double mejorFitness(){ //AFD
-        return 1000;
-    }
+
 }

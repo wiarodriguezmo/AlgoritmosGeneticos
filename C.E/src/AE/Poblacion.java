@@ -10,24 +10,28 @@ public class Poblacion {
     double cruce;
     ArrayList<Individuo> individuos = new ArrayList<>();
     Individuo mejor;
+    double probMutacion;
     
-    public Poblacion(int poblacionInicial, int largoCromosoma, double cruce){
+    public Poblacion(int poblacionInicial, int dim, double cruce, double frontera, double probMutacion){
         for (int i = 0; i < poblacionInicial; i++){
-            Individuo individuo = new Individuo(Individuo.generarCodAleatorio(largoCromosoma));
+            Individuo individuo = new Individuo(Individuo.generarCodAleatorio(dim,frontera));
             individuos.add(individuo);
         }
         this.cruce = cruce;
+        this.probMutacion = probMutacion;
         mejor = mejorFitness();
     }
     
-    public Poblacion(ArrayList<Individuo> individuos, double cruce){
+    public Poblacion(ArrayList<Individuo> individuos, double cruce, double probMutacion){
         this.individuos = individuos;
         this.cruce = cruce;
+        this.probMutacion = probMutacion;
+        mejor = mejorFitness();
     }
     
     private Individuo mejorFitness(){
         Individuo temp = new Individuo();
-        temp.fitness= 0;
+        temp.fitness= -100;
         for (Individuo individuo : individuos) {
                 if(individuo.fitness>temp.fitness)temp=individuo;
             }
@@ -66,7 +70,7 @@ public class Poblacion {
                     public int compare(Object o1, Object o2) {
                         Individuo i1 = (Individuo) o1;
                         Individuo i2 = (Individuo) o2;
-                        return new Integer(i2.fitness).compareTo(new Integer(i1.fitness));
+                        return new Double(i2.fitness).compareTo(new Double(i1.fitness));
                     }
                 });
             
@@ -76,14 +80,14 @@ public class Poblacion {
                 tamano--;
             }
         }
-        return new Poblacion(seleccionados, cruce);
+        return new Poblacion(seleccionados, cruce,probMutacion);
     }
     
     private Poblacion elitista(int tamano){
         ArrayList<Individuo> seleccionados1 = steadyState((int)(tamano/3.0)).individuos;
         ArrayList<Individuo> seleccionados = ruleta(tamano-(int)(tamano/3.0)).individuos;
         seleccionados.addAll(seleccionados1);
-        return new Poblacion(seleccionados, cruce);
+        return new Poblacion(seleccionados, cruce,probMutacion);
     }
     
     private Poblacion steadyState(int tamano){
@@ -94,7 +98,7 @@ public class Poblacion {
                 public int compare(Object o1, Object o2) {
                     Individuo i1 = (Individuo) o1;
                     Individuo i2 = (Individuo) o2;
-                    return new Integer(i2.fitness).compareTo(new Integer(i1.fitness));
+                    return new Double(i2.fitness).compareTo(new Double(i1.fitness));
                 }
             });
         ArrayList<Individuo> seleccionados = new ArrayList<Individuo>();
@@ -102,7 +106,7 @@ public class Poblacion {
             Individuo next = it.next();
             seleccionados.add(next);
         }
-        return new Poblacion(seleccionados, cruce);
+        return new Poblacion(seleccionados, cruce,probMutacion);
     }
     
     // este método emplea el algoritmo O(1) de estocástica aceptancia [1] de Adam Lipowski, Dorota Lipowska
@@ -116,7 +120,7 @@ public class Poblacion {
                 tamano--;
             }
         }
-        return new Poblacion(seleccionados, cruce);
+        return new Poblacion(seleccionados, cruce,probMutacion);
     }
     
     private Poblacion torneo(int tamano){
@@ -126,7 +130,7 @@ public class Poblacion {
             ArrayList<Individuo> muestreo = selAleatoria(16); // 16 es el número de muestreo para cada los n torneos, 16individuos participan cada torneo
             seleccionados.add(torneoRecursivo(muestreo.subList(0, muestreo.size())));
         }
-        return new Poblacion(seleccionados, cruce);
+        return new Poblacion(seleccionados, cruce,probMutacion);
     }
     
     private Individuo torneoRecursivo(List<Individuo> muestra){
@@ -161,12 +165,12 @@ public class Poblacion {
                 uno = resulCruce[0];
                 dos = resulCruce[1];
             }
-            uno.mutar();
+            uno.mutar(probMutacion);
             hijos.add(uno);
-            dos.mutar();
+            dos.mutar(probMutacion);
             hijos.add(dos);
         }
-        return new Poblacion(hijos, cruce);
+        return new Poblacion(hijos, cruce,probMutacion);
     }
 
 }

@@ -1,82 +1,50 @@
 package AE;
 
 public class Individuo {
-    int fitness;
-    boolean[] codigo;
-    
-    int[][] transiciones = new int[10][3]; // AFD
+    double fitness;
+    double codigo[];
     
     public Individuo(){
     }
     
-    public Individuo(boolean[] codigo){
+    public Individuo(double[] codigo){
         this.codigo = codigo;
-        fitness = AE.fitness();
+        fitness = AE.fitness(this.codigo);
     }
     
-    public static boolean[] generarCodAleatorio(int tamano){
-        boolean[] cod = new boolean[tamano];
-        for (int i = 0; i < tamano; i++) {
-            if(Math.random()<0.5)cod[i] = true;
-            else cod[i] = false;
-        }
+    public static double[] generarCodAleatorio(int dim, double frontera){
+        double[] cod = new double[dim];
+        for (int i = 0; i < dim; i++)
+            cod[i] = Math.random()*frontera;
+           
         return cod;
     }
     
     public static Individuo[] cruzar(String tipoCruce, Individuo uno, Individuo dos){
+        double[] tres = uno.codigo;
+        double[] cuatro = dos.codigo;
         switch (tipoCruce) {
-            case "1punto": 
-                int corte = (int) (Math.random()*uno.codigo.length);
-                boolean[] tres = new boolean[uno.codigo.length];  
-                boolean[] cuatro = new boolean[uno.codigo.length];  
-                for(int i=0;i<uno.codigo.length;i++){
-                    if(i<=corte){
-                        tres[i] = uno.codigo[i];
-                        cuatro[i] = dos.codigo[i];
-                    }else {
-                        tres[i] = dos.codigo[i];
-                        cuatro[i]  = uno.codigo[i];;
-                    }
+            case "promedio": 
+                for(int i=0;i<tres.length;i++){
+                    double promedio = (tres[i] + cuatro[i]) / 2.0;
+                    cuatro[i] = tres[i] = promedio;
                 }
+                
                 Individuo[] Zwei = {new Individuo(tres), new Individuo(cuatro)};
                 return Zwei;
-                
-            case "2puntos":
-                int corte1 = (int) (Math.random()*uno.codigo.length);
-                int corte2 = (int) (Math.random()*uno.codigo.length);
-                if(corte1>corte2){
-                    int temp = corte1;
-                    corte1=corte2;
-                    corte2=temp;
-                }
-                boolean[] drei = new boolean[uno.codigo.length];  
-                boolean[] vier = new boolean[uno.codigo.length];  
-                for(int i=0;i<uno.codigo.length;i++){
-                    if(i<=corte1 || i>corte2){
-                        drei[i] = uno.codigo[i];
-                        vier[i] = dos.codigo[i];
-                    }else if(i>corte1 && i<=corte2){
-                        vier[i] = uno.codigo[i];
-                        drei[i]  = dos.codigo[i];;
-                    }
-                }
-                Individuo[] zwei = {new Individuo(drei), new Individuo(vier)};
-                return zwei;
-                
-            case "uniforme":
+             
+            case "intercambio":
                 //implementando
         }
         return null;
     }
     
-    public void mutar(){
-        int largo = codigo.length;
-        double probM = 1.0/largo;
-        for (int i=0; i<largo;i++) {
-            if(Math.random()< probM){
-                codigo[i] = !codigo[i];
+    public void mutar(double probMutacion){
+        for (int i = 0; i < codigo.length; i++) {
+             if(Math.random() < probMutacion){
+                if(Math.random() < 0.5)codigo[i] += Math.random()*0.1*codigo[i];
+                else codigo[i] -= Math.random()*0.1*codigo[i];
             }
         }
     }
-
 }
