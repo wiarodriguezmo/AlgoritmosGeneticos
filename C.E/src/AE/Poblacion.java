@@ -9,6 +9,7 @@ import java.util.Iterator;
 public class Poblacion {
     double cruce;
     ArrayList<Individuo> individuos = new ArrayList<>();
+    Individuo mejor;
     
     public Poblacion(int poblacionInicial, int largoCromosoma, double cruce){
         for (int i = 0; i < poblacionInicial; i++){
@@ -16,6 +17,7 @@ public class Poblacion {
             individuos.add(individuo);
         }
         this.cruce = cruce;
+        mejor = mejorFitness();
     }
     
     public Poblacion(ArrayList<Individuo> individuos, double cruce){
@@ -23,7 +25,14 @@ public class Poblacion {
         this.cruce = cruce;
     }
     
-
+    private Individuo mejorFitness(){
+        Individuo temp = new Individuo();
+        temp.fitness= 0;
+        for (Individuo individuo : individuos) {
+                if(individuo.fitness>temp.fitness)temp=individuo;
+            }
+        return temp;
+    }
     
     public Poblacion seleccion(String metodo, int tamano){
         switch (metodo) {
@@ -45,24 +54,25 @@ public class Poblacion {
     
     // Ordena los elementos y luego selecciona uno aleatorio, si pasa X~N(0,1) < C.X^(-r), 
     // que es lo mismo que Math.random()< 1.0 / Math.pow(2, sel)  | siendo C=1, X=2 y r=sel. (sel es el ranking).
-    private Poblacion ranking(int tamano){ // http://www.opttek.com/documentation/engine/WebHelp/SimulationOptimization_Ranking_and_selection_algorithm.htm
-        ArrayList<Individuo> seleccionados1 = individuos;
-        
-        Collections.sort(seleccionados1, new Comparator() {
-                @Override
-                public int compare(Object o1, Object o2) {
-                    Individuo i1 = (Individuo) o1;
-                    Individuo i2 = (Individuo) o2;
-                    return new Integer(i2.fitness).compareTo(new Integer(i1.fitness));
-                }
-            });
+    private Poblacion ranking(int tamano){ // http://www.geatbx.com/docu/algindex-02.html
+        ArrayList<Individuo> seleccionados1;
         
         ArrayList<Individuo> seleccionados = new ArrayList<Individuo>();
         while(tamano>0) {  //según n (tamaño) padres a seleccionar de la población se hace n lanzamientos de la ruleta.
+            seleccionados1 = selAleatoria(10);
+        
+            Collections.sort(seleccionados1, new Comparator() {
+                    @Override
+                    public int compare(Object o1, Object o2) {
+                        Individuo i1 = (Individuo) o1;
+                        Individuo i2 = (Individuo) o2;
+                        return new Integer(i2.fitness).compareTo(new Integer(i1.fitness));
+                    }
+                });
+            
             int sel = (int) (Math.random()*seleccionados1.size());
-            Individuo individuo = seleccionados1.get(sel);
             if(Math.random()< 1.0 / (double)Math.pow(2, sel)){
-                seleccionados.add(individuo);
+                seleccionados.add(seleccionados1.get(sel));
                 tamano--;
             }
         }
@@ -95,13 +105,13 @@ public class Poblacion {
         return new Poblacion(seleccionados, cruce);
     }
     
-    // este método emplea el algoritmo O(1) de estocástica aceptancia [1]
+    // este método emplea el algoritmo O(1) de estocástica aceptancia [1] de Adam Lipowski, Dorota Lipowska
     // [1] https://en.wikipedia.org/wiki/Fitness_proportionate_selection#Java_-_stochastic_acceptance_O.281.29_version & http://arxiv.org/abs/1109.3627
     private Poblacion ruleta(int tamano){
         ArrayList<Individuo> seleccionados = new ArrayList<>();
         while(tamano>0) {  //según n (tamaño) padres a seleccionar de la población se hace n lanzamientos de la ruleta.
             Individuo individuo = individuos.get((int) (Math.random()*individuos.size()));
-            if(Math.random()< ((double)individuo.fitness) / (double)individuo.mejorFitness()){
+            if(Math.random()< ((double)individuo.fitness) / (double)mejorFitness().fitness){
                 seleccionados.add(individuo);
                 tamano--;
             }
