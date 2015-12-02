@@ -31,10 +31,10 @@ public class Poblacion {
     
     private Individuo mejorFitness(){
         Individuo temp = new Individuo();
-        temp.fitness= -100;
-        for (Individuo individuo : individuos) {
-                if(individuo.fitness>temp.fitness)temp=individuo;
-            }
+        temp.fitness= Double.POSITIVE_INFINITY; // esto es relativo y sujeto a cambios
+        for (Individuo individuo : individuos)
+                if(individuo.fitness<temp.fitness)temp=individuo; // esto es relativo y sujeto a cambios 
+            
         return temp;
     }
     
@@ -70,7 +70,7 @@ public class Poblacion {
                     public int compare(Object o1, Object o2) {
                         Individuo i1 = (Individuo) o1;
                         Individuo i2 = (Individuo) o2;
-                        return new Double(i2.fitness).compareTo(new Double(i1.fitness));
+                        return new Double(i1.fitness).compareTo(new Double(i2.fitness));
                     }
                 });
             
@@ -98,7 +98,7 @@ public class Poblacion {
                 public int compare(Object o1, Object o2) {
                     Individuo i1 = (Individuo) o1;
                     Individuo i2 = (Individuo) o2;
-                    return new Double(i2.fitness).compareTo(new Double(i1.fitness));
+                    return new Double(i1.fitness).compareTo(new Double(i2.fitness));
                 }
             });
         ArrayList<Individuo> seleccionados = new ArrayList<Individuo>();
@@ -115,7 +115,7 @@ public class Poblacion {
         ArrayList<Individuo> seleccionados = new ArrayList<>();
         while(tamano>0) {  //según n (tamaño) padres a seleccionar de la población se hace n lanzamientos de la ruleta.
             Individuo individuo = individuos.get((int) (Math.random()*individuos.size()));
-            if(Math.random()< ((double)individuo.fitness) / (double)mejorFitness().fitness){
+            if(Math.random()< (individuo.fitness) / mejor.fitness){
                 seleccionados.add(individuo);
                 tamano--;
             }
@@ -127,7 +127,7 @@ public class Poblacion {
         ArrayList<Individuo> seleccionados = new ArrayList<>();
         for (int i = 0; i < tamano; i++) {
             //según n(tamaño) individuos de la población se hace n torneos para seleccionar n padres
-            ArrayList<Individuo> muestreo = selAleatoria(16); // 16 es el número de muestreo para cada los n torneos, 16individuos participan cada torneo
+            ArrayList<Individuo> muestreo = selAleatoria(8); // 16 es el número de muestreo para cada los n torneos, 16individuos participan cada torneo
             seleccionados.add(torneoRecursivo(muestreo.subList(0, muestreo.size())));
         }
         return new Poblacion(seleccionados, cruce,probMutacion);
@@ -142,9 +142,9 @@ public class Poblacion {
             uno = muestra.get(0);
             dos = muestra.get(1);
         }
-        double prob1 = (double)uno.fitness/(double)(uno.fitness+dos.fitness);
-        if(Math.random()< prob1)return uno;
-        else return dos;
+        double prob1 = uno.fitness/(uno.fitness+dos.fitness);
+        if(Math.random()< prob1)return dos;
+        else return uno;
     }
     
     public ArrayList<Individuo> selAleatoria(int tamano){

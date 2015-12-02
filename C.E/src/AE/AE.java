@@ -1,30 +1,37 @@
 package AE;
 
+import util.Funciones;
 import java.io.IOException;
+import test.BenchmarkCEC2013_LSGO;
 
 public class AE {
+    private static int numF = 0;
+    static int numIndividuos = 40;
+    
     
     public static void main(String[] args) throws IOException{
-        int numIndividuos = 100;
-        int D=2;
-        double frontera = 2.048;
-        double probMutacion = 0.2;
+        
+        int D=1000;
+        double frontera = 5;
+        double probMutacion = 10.0/(double)D;
         Poblacion poblacion = new Poblacion(numIndividuos,D,0.6,frontera,probMutacion); // #individuos, Dimensión, probCruce, frontera.
         
         //Probando
             double comienzo = 0.0;
             for (int i = 0; i < numIndividuos; i++) {
-                comienzo +=  poblacion.individuos.get(i).fitness;
+                comienzo +=  poblacion.individuos.get(i).fitness; 
             }System.out.println(" Población inicial : " + comienzo/(double)numIndividuos);
+            System.out.println("Mejor individuo: " + poblacion.mejor.fitness);
         //Probando 
         
-        Poblacion superPoblacion = evolucionar(poblacion,600); // población y generaciones
+        Poblacion superPoblacion = evolucionar(poblacion,10000); // población y generaciones
         
          //Probando
             double finalizado=0;
-            for (int i = 0; i < numIndividuos; i++) {
+            
+            for (int i = 0; i < numIndividuos; i++) 
                 finalizado+= superPoblacion.individuos.get(i).fitness;
-            }System.out.println(" Población final : " + finalizado/(double)numIndividuos);
+            System.out.println(" Población final : " + finalizado/(double)numIndividuos);
             System.out.println("Mejor individuo: " + superPoblacion.mejor.fitness);
         //Probando */
     }
@@ -33,11 +40,18 @@ public class AE {
     public static Poblacion evolucionar(Poblacion poblacion, int generaciones){
         boolean fin = false;
         while(!fin){
-            Poblacion padres = poblacion;//.seleccion("ss",poblacion.individuos.size()); // Existe también: Ranking, Ruleta, steadyState, Elitista y Torneo. (Trabajando en Stochastic universal sampling) 
-            Poblacion hijos = padres.generarHijos("promedio"); // Para cruce existe: promedio, intercambio, suma/resta aleatoria de la mitad de la diferencia (suYre)
+            Poblacion padres = poblacion.seleccion("ss",poblacion.individuos.size()/4); // Existe también: Ranking, Ruleta, steadyState, Elitista y Torneo. (Trabajando en Stochastic universal sampling) 
+            Poblacion hijos = padres.generarHijos("2puntos"); 
+            Poblacion hijos2 = padres.generarHijos("1punto");
+            Poblacion hijos3 = padres.generarHijos("promedio");
+            Poblacion hijos4 = padres.generarHijos("2puntos");
             
             poblacion.individuos.addAll(hijos.individuos);
-            poblacion = poblacion.seleccion("ranking",hijos.individuos.size());
+            poblacion.individuos.addAll(hijos2.individuos);
+            poblacion.individuos.addAll(hijos3.individuos);
+            poblacion.individuos.addAll(hijos4.individuos);
+            
+            poblacion = poblacion.seleccion("elitista",numIndividuos);
             
             generaciones--;
             if(generaciones <=0)fin=true; 
@@ -50,8 +64,10 @@ public class AE {
     
     // Función a modificar
     public static double fitness(double codigo[]){ 
-        Funciones func = new Funciones();
-        return -func.Rosenbrock(codigo);
+        double temp = BenchmarkCEC2013_LSGO.f2(codigo);
+        if(numF%100==0)System.out.println("Eval del Fitnes #: " + numF + " : " + temp);
+        numF++;
+        return temp;
     }   
 
 }

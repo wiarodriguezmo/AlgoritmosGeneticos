@@ -1,4 +1,4 @@
-package AE;
+package util;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -45,7 +45,7 @@ public class Funciones {
         mathEval.setVariable("n", n);
         mathEval.setVariable("A", A);
         for(int i = 0; i<n; i++){
-            if(values[i]<-5.12 || values[i]>5.12) return -1;
+            if(values[i]<-5.12 || values[i]>5.12) return Double.POSITIVE_INFINITY;
             mathEval.setVariable("x"+(i+1), values[i]);
             f = f + mathEval.evaluate("(x"+(i+1)+"^2 - (A * cos(2*pi*x"+(i+1)+")))");
         }
