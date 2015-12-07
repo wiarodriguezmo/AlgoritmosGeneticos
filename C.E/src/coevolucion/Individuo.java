@@ -1,20 +1,24 @@
-package AE;
+package coevolucion;
 
-public class Individuo {
+public class Individuo implements Cloneable{
     double fitness;
     double codigo[];
+    int amigos[]=new int[2];
     
     public Individuo(){
     }
     
-    public Individuo(double[] codigo){
+    public Individuo(double[] codigo, int clase){
         this.codigo = codigo;
-        fitness = AE.fitness(this.codigo);
+        fitness = AE.fitness(this.codigo,clase);
+        amigos[0] = (int)Math.floor(Math.random()*20);
+        amigos[1] = (int)Math.floor(Math.random()*20);
     }
     
-    public Individuo(double[] codigo, double f){
+    public Individuo(double[] codigo, double f, int amigos[]){
         this.codigo = codigo;
         fitness = f;
+        this.amigos = amigos;
     }
     
     public static double[] generarCodAleatorio(int dim, double frontera){
@@ -41,7 +45,7 @@ public class Individuo {
                     tres[i] = dos.codigo[i];
                     cuatro[i] = uno.codigo[i];
                 }
-                Individuo[] Zwei = {new Individuo(tres,0), new Individuo(cuatro,0)};
+                Individuo[] Zwei = {new Individuo(tres,0.0,uno.amigos), new Individuo(cuatro,0.0,dos.amigos)};
                 return Zwei;
                 
             case "2puntos":
@@ -64,7 +68,7 @@ public class Individuo {
                         drei[i] = uno.codigo[i];
                         vier[i] = dos.codigo[i];
                 }
-                Individuo[] zwei = {new Individuo(drei,0), new Individuo(vier,0)};
+                Individuo[] zwei = {new Individuo(drei,0.0,uno.amigos), new Individuo(vier,0.0,dos.amigos)};
                 return zwei;
                 
             case "diferencia": 
@@ -77,7 +81,7 @@ public class Individuo {
                     else if(Math.random() < 0.75){cuatro[i] += dif; tres[i] -= dif;}
                     else cuatro[i] -= dif; tres[i] -= dif;
                 }
-                Individuo[] Zwei1 = {new Individuo(tres,0), new Individuo(cuatro,0)};
+                Individuo[] Zwei1 = {new Individuo(tres,0.0,uno.amigos), new Individuo(cuatro,0.0,dos.amigos)};
                 return Zwei1;
                 
             case "promedio": 
@@ -88,7 +92,7 @@ public class Individuo {
                     cuatro[i] = tres[i] = promedio;
                 }
                 
-                Individuo[] Zwei2 = {new Individuo(tres,0), new Individuo(cuatro,0)};
+                Individuo[] Zwei2 = {new Individuo(tres,0.0,uno.amigos), new Individuo(cuatro,0.0,dos.amigos)};
                 return Zwei2;
             case "intercambio":
                 //implementando
@@ -96,13 +100,26 @@ public class Individuo {
         return null;
     }
     
-    public void mutar(double probMutacion){
+    public void mutar(double probMutacion, int clase){
         for (int i = 0; i < codigo.length; i++) {
              if(Math.random() < probMutacion){
-                if(Math.random() < 0.5)codigo[i] += Math.random()*0.1*codigo[i];
-                else codigo[i] -= Math.random()*0.1*codigo[i];
+                if(Math.random() < 0.5)codigo[i] += Math.random()*0.2*codigo[i];
+                else codigo[i] -= Math.random()*0.2*codigo[i];
             }
         }
-        fitness = AE.fitness(this.codigo);
+    }
+    
+    //Distancia Euclidiana
+    public double distancia(Individuo otro){
+        double distancia=0.0;
+        for (int i = 0; i < codigo.length; i++) {
+            distancia += (codigo[i]-otro.codigo[i])*(codigo[i]-otro.codigo[i]);
+        }
+        return Math.sqrt(distancia);
+    }
+    
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return super.clone();        
     }
 }

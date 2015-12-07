@@ -1,4 +1,4 @@
-package AE;
+package reales;
 
 import util.Funciones;
 import java.io.IOException;
@@ -63,7 +63,7 @@ public class AE {
     /* La siguiente función está próxima a ser cambiada por lambda expresión de Java8 */
     
     // Función a modificar
-    public static double fitness(double codigo[]){ 
+    public static double fitness(double codigo[]){
         double temp = BenchmarkCEC2013_LSGO.f2(codigo);
         if(numF%100==0)System.out.println("Eval del Fitnes #: " + numF + " : " + temp);
         numF++;

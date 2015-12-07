@@ -1,4 +1,4 @@
-package AE;
+package reales;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -54,7 +54,6 @@ public class Poblacion {
                 return null;
         }
     }
-    
     
     // Ordena los elementos y luego selecciona uno aleatorio, si pasa X~N(0,1) < C.X^(-r), 
     // que es lo mismo que Math.random()< 1.0 / Math.pow(2, sel)  | siendo C=1, X=2 y r=sel. (sel es el ranking).
