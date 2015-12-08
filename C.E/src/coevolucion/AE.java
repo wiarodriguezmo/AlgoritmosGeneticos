@@ -25,14 +25,19 @@ public class AE {
         
         //Probando
             double comienzo=0.0, comienzo2=0.0, comienzo3=0.0;
+            double mejorCom=0.0, mejorCom2=0.0, mejorCom3=0.0;
             for (int i = 0; i < numIndividuos; i++){
                 comienzo +=  poblacion[0].individuos.get(i).fitness; 
                 comienzo2 +=  poblacion[1].individuos.get(i).fitness; 
                 comienzo3 +=  poblacion[2].individuos.get(i).fitness; 
             }
+            mejorCom = poblacion[0].mejor.fitness;
+            mejorCom2 = poblacion[1].mejor.fitness;
+            mejorCom3 = poblacion[2].mejor.fitness;
+            
         //Probando 
-        
-        Poblacion[] superPoblacion = evolucionar(poblacion,30000); // población y generaciones
+            
+        Poblacion[] superPoblacion = evolucionar(poblacion,130000); // población y generaciones
         
          //Probando
             double finalizado=0.0, finalizado2=0.0, finalizado3=0.0;
@@ -41,10 +46,10 @@ public class AE {
                 finalizado2 +=  superPoblacion[1].individuos.get(i).fitness; 
                 finalizado3 +=  superPoblacion[2].individuos.get(i).fitness; 
             }
-            System.out.println(" Población inicial 1: " + comienzo/(double)numIndividuos + ", 2: " + comienzo2/(double)numIndividuos  + " y 3: " + comienzo3/(double)numIndividuos );
-            System.out.println("Mejor individuo: " + poblacion[0].mejor.fitness + " 2:" + poblacion[1].mejor.fitness + " 3:" + poblacion[2].mejor.fitness);
+            System.out.println(" ------Población inicial 1: " + comienzo/(double)numIndividuos + ", 2: " + comienzo2/(double)numIndividuos  + " y 3: " + comienzo3/(double)numIndividuos );
+            System.out.println("Mejor individuo: " + mejorCom + " 2:" + mejorCom2 + " 3:" + mejorCom3);
         
-            System.out.println(" Población final 1: " + finalizado/(double)numIndividuos + ", 2: " + finalizado2/(double)numIndividuos  + " y 3: " + finalizado3/(double)numIndividuos );
+            System.out.println(" ------Población final 1: " + finalizado/(double)numIndividuos + ", 2: " + finalizado2/(double)numIndividuos  + " y 3: " + finalizado3/(double)numIndividuos );
             System.out.println("Mejor individuo: " + superPoblacion[0].mejor.fitness + " 2:" + superPoblacion[1].mejor.fitness + " 3:" + superPoblacion[2].mejor.fitness);
         //Probando 
 
@@ -61,10 +66,13 @@ public class AE {
             poblacion[0].seleccionSS(hijos[0]);
                     
             hijos[1] = poblacion[1].generarHijos("2puntos",poblacion[0],poblacion[2]);
-            poblacion[1].individuos.addAll(hijos[1].individuos);
-            poblacion[1] = poblacion[1].seleccion("elitista",numIndividuos);
+            poblacion[1].seleccionSS(hijos[1]);
             
-            System.out.println("Individuo uno, Fitness: " + poblacion[0].individuos.get(0).fitness + " Cod: " + Arrays.toString(poblacion[0].individuos.get(0).codigo));
+            hijos[2] = poblacion[2].generarHijos("2puntos",poblacion[0],poblacion[1]);
+            poblacion[2].seleccionSS(hijos[2]);
+            
+            System.out.println("Individuo uno, Fitness: " + poblacion[0].individuos.get(0).fitness + " ### Mejor 0: " + poblacion[0].mejor.fitness
+             + " ### Mejor 1: " + poblacion[1].mejor.fitness  + " ### Mejor 2: " + poblacion[2].mejor.fitness);
 //            
 //            hijos[2] = poblacion[2].generarHijos("2puntos");
 //            poblacion[2].individuos.addAll(hijos[0].individuos);
@@ -72,6 +80,25 @@ public class AE {
             
             generaciones--;
             if(generaciones <=0)fin=true; 
+            if(poblacion[0].mejor.fitness<-170){
+                System.out.println("***0 Se para por mejor individuo: " + poblacion[0].mejor.fitness);
+                System.out.println("Código Pob0: " + Arrays.toString(poblacion[0].mejor.codigo));
+                System.out.println("Código Pob1: " + Arrays.toString(poblacion[1].individuos.get(poblacion[0].mejor.amigos[0]).codigo));
+                System.out.println("Código Pob2: " + Arrays.toString(poblacion[2].individuos.get(poblacion[0].mejor.amigos[1]).codigo));
+                fin=true;
+            }else if(poblacion[1].mejor.fitness<-170){
+                System.out.println("***1 Se para por mejor individuo: " + poblacion[1].mejor.fitness);
+                System.out.println("Código Pob0: " + Arrays.toString(poblacion[0].individuos.get(poblacion[1].mejor.amigos[0]).codigo));
+                System.out.println("Código Pob1: " + Arrays.toString(poblacion[1].mejor.codigo));
+                System.out.println("Código Pob2: " + Arrays.toString(poblacion[2].individuos.get(poblacion[1].mejor.amigos[1]).codigo));
+                fin=true;
+            }else if(poblacion[2].mejor.fitness<-170){
+                System.out.println("***2 Se para por mejor individuo: " + poblacion[2].mejor.fitness);
+                System.out.println("Código Pob0: " + Arrays.toString(poblacion[0].individuos.get(poblacion[2].mejor.amigos[0]).codigo));
+                System.out.println("Código Pob1: " + Arrays.toString(poblacion[1].individuos.get(poblacion[2].mejor.amigos[1]).codigo));
+                System.out.println("Código Pob2: " + Arrays.toString(poblacion[2].mejor.codigo));
+                fin=true;
+            }
             // la idea es comprobar también otras condiciones, más que un número de iteraciones, e.g si los últimos 5 estados son los mismos, o muy cercanos
         }
         return poblacion;
@@ -96,8 +123,6 @@ public class AE {
             if(clasifica)if((int)next[13]==clase)fitness--;
             else if((int)next[13]!=clase)fitness--;
         }
-            
-        if(numF%1000==0)System.out.println("Eval del Fitnes #: " + numF + " : " + fitness);
         numF++;
         return fitness;
     }   
@@ -110,48 +135,34 @@ public class AE {
             switch (clase){
                 case 1:
                     if((int)next[13]==1){
-                        if(uno(codigo,next)&&!(dos(codigoB,next)||tres(codigoC,next)))fitness--;
+                        if(acepta(codigo,next)&&!(acepta(codigoB,next)||acepta(codigoC,next)))fitness--;
                     }else if((int)next[13]==2){
-                        if(dos(codigoB,next)&&!(uno(codigo,next)||tres(codigoC,next)))fitness--;
-                    }else if(tres(codigoC,next)&&!(uno(codigo,next)||dos(codigoB,next)))fitness--;
+                        if(acepta(codigoB,next)&&!(acepta(codigo,next)||acepta(codigoC,next)))fitness--;
+                    }else if(acepta(codigoC,next)&&!(acepta(codigo,next)||acepta(codigoB,next)))fitness--;
                     break;
                 case 2:
                     if((int)next[13]==1){
-                        if(uno(codigoB,next)&&!(dos(codigo,next)||tres(codigoC,next)))fitness--;
+                        if(acepta(codigoB,next)&&!(acepta(codigo,next)||acepta(codigoC,next)))fitness--;
                     }else if((int)next[13]==2){
-                        if(dos(codigo,next)&&!(uno(codigoB,next)||tres(codigoC,next)))fitness--;
-                    }else if(tres(codigoC,next)&&!(uno(codigoB,next)||dos(codigo,next)))fitness--;
+                        if(acepta(codigo,next)&&!(acepta(codigoB,next)||acepta(codigoC,next)))fitness--;
+                    }else if(acepta(codigoC,next)&&!(acepta(codigoB,next)||acepta(codigo,next)))fitness--;
                     break;
                 default: 
                     if((int)next[13]==1){
-                        if(uno(codigoB,next)&&!(dos(codigoC,next)||tres(codigo,next)))fitness--;
+                        if(acepta(codigoB,next)&&!(acepta(codigoC,next)||acepta(codigo,next)))fitness--;
                     }else if((int)next[13]==2){
-                        if(dos(codigoC,next)&&!(uno(codigoB,next)||tres(codigo,next)))fitness--;
-                    }else if(tres(codigo,next)&&!(uno(codigoB,next)||dos(codigoC,next)))fitness--;
+                        if(acepta(codigoC,next)&&!(acepta(codigoB,next)||acepta(codigo,next)))fitness--;
+                    }else if(acepta(codigo,next)&&!(acepta(codigoB,next)||acepta(codigoC,next)))fitness--;
                     break;
             }
         }
             
-        if(numF%1000==0)System.out.println("mejor Fitnes #: " + numF + " : " + fitness);
+        if(numF%10000==0)System.out.println("Eval Fitnes #: " + numF + " : " + fitness);
         numF++;
         return fitness;
-    }   
+    }
     
-    private static boolean uno(double[] codigo, double[] next) {
-        for (int i = 0; i < next.length-1; i++) {
-            if(codigo[i*3]<0.0)
-                if(!((codigo[i*3+1]<=next[i] && codigo[i*3+2]>next[i]) || (codigo[i*3+1]>next[i] && codigo[i*3+2]<=next[i])))return false;
-        }return true;
-    }
-
-    private static boolean dos(double[] codigo, double[] next) {
-        for (int i = 0; i < next.length-1; i++) {
-            if(codigo[i*3]<0.0)
-                if(!((codigo[i*3+1]<=next[i] && codigo[i*3+2]>next[i]) || (codigo[i*3+1]>next[i] && codigo[i*3+2]<=next[i])))return false;
-        }return true;
-    }
-
-    private static boolean tres(double[] codigo, double[] next) {
+    private static boolean acepta(double[] codigo, double[] next) {
         for (int i = 0; i < next.length-1; i++) {
             if(codigo[i*3]<0.0)
                 if(!((codigo[i*3+1]<=next[i] && codigo[i*3+2]>next[i]) || (codigo[i*3+1]>next[i] && codigo[i*3+2]<=next[i])))return false;

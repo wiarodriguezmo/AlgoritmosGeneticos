@@ -15,7 +15,7 @@ public class Poblacion implements Cloneable{
     
     public Poblacion(int poblacionInicial, int dim, double cruce, double frontera, double probMutacion, int clase) throws CloneNotSupportedException{
         for (int i = 0; i < poblacionInicial; i++){
-            Individuo individuo = new Individuo(Individuo.generarCodAleatorio(dim,frontera),clase);
+            Individuo individuo = new Individuo(Individuo.generarCodAleatorio(dim,frontera,clase-1),clase);
             individuos.add(individuo);
             this.clase = clase;
         }
@@ -167,11 +167,11 @@ public class Poblacion implements Cloneable{
                 uno = resulCruce[0];
                 dos = resulCruce[1];
             }
-            uno.mutar(probMutacion,clase);
-            dos.mutar(probMutacion,clase);
+            uno.mutar(probMutacion,clase,mejor.fitness);
+            dos.mutar(probMutacion,clase,mejor.fitness);
             
             uno.fitness = AE.fitnessConjunto(uno.codigo, clase, poblacionB.individuos.get(uno.amigos[0]).codigo, poblacionC.individuos.get(uno.amigos[1]).codigo);
-            dos.fitness = AE.fitnessConjunto(dos.codigo, clase, individuos.get(dos.amigos[0]).codigo, individuos.get(dos.amigos[1]).codigo);
+            dos.fitness = AE.fitnessConjunto(dos.codigo, clase, poblacionB.individuos.get(dos.amigos[0]).codigo, poblacionC.individuos.get(dos.amigos[1]).codigo);
             hijos.add(uno);
             hijos.add(dos);
         }
